@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Education & Skill Development</title>
+    <!-- Import Google Fonts -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto+Mono:wght@400;700&display=swap');
+
+        /* Reset defaults */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Base styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: row;
+            min-height: 100vh;
+        }
+
+        /* Main Content Wrapper */
+        .main-content {
+            flex: 1;
+            padding-right: 320px; /* Space for doubt column */
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #0f1419, #1c2526);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        header h1 {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 2rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #00b894;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2.5rem;
+        }
+        nav a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        nav a:hover {
+            background: #00b894;
+            color: #0f1419;
+        }
+
+        /* Hero Section */
+        #home {
+            background: linear-gradient(to bottom, #2d3436, #1a1a1a);
+            text-align: center;
+            padding: 6rem 2rem;
+            color: #e0e0e0;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #home h2 {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        #home p {
+            font-size: 1.5rem;
+            margin-bottom: 2.5rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+        button.hero-btn {
+            padding: 1rem 3rem;
+            background: #d63031;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, background 0.3s ease;
+            margin: 0.5rem;
+        }
+        button.hero-btn:hover {
+            background: #b71c1c;
+            transform: scale(1.1);
+        }
+
+        /* Rank Badge */
+        .rank-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 150px;
+            height: 150px;
+            background: #00b894;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+            transform: rotate(-15deg);
+            transition: transform 0.3s ease;
+            z-index: 10;
+        }
+        .rank-badge:hover {
+            transform: rotate(0deg);
+        }
+        .rank-badge .star {
+            font-size: 3rem;
+            margin-bottom: 5px;
+        }
+        .rank-badge .rank {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.2rem;
+            color: #0f1419;
+            margin-top: 5px;
+        }
+        .rank-badge .position {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            color: #0f1419;
+        }
+
+        /* Mini Face Cam */
+        #face-cam-container {
+            position: relative;
+            margin-top: 1rem;
+            z-index: 1000;
+        }
+        video, #captured-image {
+            width: 150px; /* Smaller for mini face cam */
+            height: 112px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            margin-top: 10px;
+            border: 2px solid #00b894; /* Visual cue */
+        }
+        canvas {
+            display: none; /* Hidden, used only for capturing */
+        }
+
+        /* Permission Feedback */
+        #permission-feedback {
+            margin-top: 1rem;
+            font-size: 1rem;
+            color: #ff6b6b;
+            display: none; /* Hidden until needed */
+        }
+
+        /* Doubt Column */
+        .doubt-column {
+            width: 300px;
+            background: #2d3436;
+            padding: 1rem;
+            position: fixed;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 50;
+            overflow-y: auto;
+            box-shadow: -4px 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .doubt-column h3 {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.5rem;
+            color: #00b894;
+            margin-bottom: 1rem;
+        }
+        .doubt-input {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: none;
+            border-radius: 5px;
+            background: #3b4a4e;
+            color: #e0e0e0;
+            font-family: 'Poppins', sans-serif;
+        }
+        .doubt-button {
+            width: 100%;
+            padding: 0.5rem;
+            background: #d63031;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .doubt-button:hover {
+            background: #b71c1c;
+        }
+        .doubt-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+        .doubt-item {
+            background: #3b4a4e;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .doubt-delete {
+            background: #ff6b6b;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            padding: 0.2rem 0.5rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .doubt-delete:hover {
+            background: #e63946;
+        }
+
+        /* Courses Section */
+        #courses {
+            padding: 4rem 2rem;
+            background: #1a1a1a;
+            text-align: center;
+        }
+        #courses h2 {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 2.5rem;
+            color: #e0e0e0;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        #courses h2::after {
+            content: '';
+            width: 50px;
+            height: 4px;
+            background: #00b894;
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .course-card {
+            background: #2d3436;
+            color: #e0e0e0;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .course-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Tests Section */
+        #tests {
+            padding: 4rem 2rem;
+            background: #1a1a1a;
+            text-align: center;
+        }
+        #tests h2 {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 2.5rem;
+            color: #e0e0e0;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        #tests h2::after {
+            content: '';
+            width: 50px;
+            height: 4px;
+            background: #00b894;
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-card {
+            background: #2d3436;
+            color: #e0e0e0;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .test-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Footer */
+        footer {
+            background: #0f1419;
+            color: #e0e0e0;
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 1rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        /* Chat Icon */
+        #chat-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #00b894;
+            color: #0f1419;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s;
+            z-index: 200;
+        }
+        #chat-icon:hover {
+            transform: scale(1.1);
+        }
+
+        /* Chat Container */
+        #chat-container {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 300px;
+            background: #2d3436;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+            display: none;
+            flex-direction: column;
+            transition: all 0.3s ease-in-out;
+            transform: scale(0);
+            transform-origin: bottom right;
+            z-index: 200;
+        }
+        #chat-container[style*="display: flex"] {
+            transform: scale(1);
+        }
+        #chat-header {
+            background: #0f1419;
+            color: #e0e0e0;
+            padding: 10px;
+            font-family: 'Roboto Mono', monospace;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #chat-header button {
+            background: none;
+            border: none;
+            color: #e0e0e0;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        #chat-body {
+            height: 250px;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            background: #1a1a1a;
+        }
+        .message {
+            padding: 8px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            max-width: 80%;
+            font-family: 'Poppins', sans-serif;
+        }
+        .user-message {
+            background: #00b894;
+            color: #0f1419;
+            align-self: flex-end;
+        }
+        .ai-message {
+            background: #3b4a4e;
+            color: #e0e0e0;
+            align-self: flex-start;
+        }
+        .message span {
+            font-size: 0.8em;
+            opacity: 0.7;
+            display: block;
+        }
+        #chat-footer {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #3b4a4e;
+        }
+        #chat-input {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+            background: #3b4a4e;
+            color: #e0e0e0;
+            font-family: 'Poppins', sans-serif;
+        }
+        #chat-footer button {
+            background: #d63031;
+            color: #fff;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                padding-right: 0; /* Remove padding for doubt column */
+            }
+            .doubt-column {
+                position: relative;
+                width: 100%;
+                height: auto;
+                padding-bottom: 4rem; /* Space for footer */
+            }
+            header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            nav ul {
+                flex-direction: column;
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+            #home h2 {
+                font-size: 2rem;
+            }
+            #home p {
+                font-size: 1.2rem;
+            }
+            button.hero-btn {
+                padding: 0.8rem 2rem;
+            }
+            .rank-badge {
+                width: 120px;
+                height: 120px;
+                top: 10px;
+                left: 10px;
+            }
+            .rank-badge .star {
+                font-size: 2.5rem;
+            }
+            .rank-badge .rank {
+                font-size: 1rem;
+            }
+            .rank-badge .position {
+                font-size: 0.8rem;
+            }
+            video, #captured-image {
+                width: 120px;
+                height: 90px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <!-- Header -->
+        <header>
+            <h1>SmartEdu</h1>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#courses">Courses</a></li>
+                    <li><a href="#tests">Tests</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- Hero Section with Rank Badge and Face Cam -->
+        <section id="home">
+            <div class="rank-badge">
+                <div class="star" id="star">★</div>
+                <div class="rank" id="rank">Rank: Loading...</div>
+                <div class="position" id="position">Position: Loading...</div>
+            </div>
+            <h2>Learn Smarter, Grow Faster</h2>
+            <p>Unlock your potential with cutting-edge education tools.</p>
+            <button class="hero-btn">Get Started</button>
+            <div id="face-cam-container">
+                <video id="video" autoplay muted></video>
+                <canvas id="canvas" width="150" height="112"></canvas>
+                <img id="captured-image" alt="Captured Image" style="display: none;">
+            </div>
+            <div id="permission-feedback"></div> <!-- Feedback for permissions -->
+        </section>
+
+        <!-- Courses Section with 24 Courses -->
+        <section id="courses">
+            <h2>Our Courses</h2>
+            <div class="course-grid">
+                <div class="course-card">AI Basics</div>
+                <div class="course-card">Web Development</div>
+                <div class="course-card">Data Science</div>
+                <div class="course-card">Machine Learning</div>
+                <div class="course-card">Cybersecurity</div>
+                <div class="course-card">Cloud Computing</div>
+                <div class="course-card">Mobile App Development</div>
+                <div class="course-card">Blockchain Technology</div>
+                <div class="course-card">Python Programming</div>
+                <div class="course-card">Java Development</div>
+                <div class="course-card">DevOps Essentials</div>
+                <div class="course-card">Game Development</div>
+                <div class="course-card">UI/UX Design</div>
+                <div class="course-card">Big Data Analytics</div>
+                <div class="course-card">Internet of Things (IoT)</div>
+                <div class="course-card">Augmented Reality</div>
+                <div class="course-card">Ethical Hacking</div>
+                <div class="course-card">Software Testing</div>
+                <div class="course-card">Full Stack Development</div>
+                <div class="course-card">Database Management</div>
+                <div class="course-card">Network Security</div>
+                <div class="course-card">Quantum Computing</div>
+                <div class="course-card">Robotics</div>
+                <div class="course-card">Digital Marketing</div>
+            </div>
+        </section>
+
+        <!-- Tests Section -->
+        <section id="tests">
+            <h2>Available Tests</h2>
+            <div class="test-grid">
+                <div class="test-card">AI Basics Quiz</div>
+                <div class="test-card">Web Development Test</div>
+                <div class="test-card">Data Science Assessment</div>
+                <div class="test-card">Machine Learning Challenge</div>
+                <div class="test-card">Cybersecurity Exam</div>
+                <div class="test-card">Python Programming Test</div>
+                <div class="test-card">Java Coding Quiz</div>
+                <div class="test-card">Full Stack Development Test</div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p>© 2025 SmartEdu. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Doubt Column -->
+    <aside class="doubt-column">
+        <h3>PLEASE ENTER YOUR DOUBT</h3>
+        <input type="text" id="note-input" class="doubt-input" placeholder="Add a doubt...">
+        <button onclick="addNote()" class="doubt-button">Add Doubt</button>
+        <ul id="notes-list" class="doubt-list"></ul>
+    </aside>
+
+    <!-- Chat Icon -->
+    <div id="chat-icon" onclick="toggleChat()">💬</div>
+    <div id="chat-container">
+        <div id="chat-header">
+            <span>AI Chat</span>
+            <button onclick="toggleChat()">✖</button>
+        </div>
+        <div id="chat-body">
+            <div id="chat-messages"></div>
+        </div>
+        <div id="chat-footer">
+            <input type="text" id="chat-input" placeholder="Ask me anything..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+
+    <!-- Audio for face not recognized alert -->
+    <audio id="alertSound" src="https://www.soundjay.com/buttons/beep-01a.mp3" preload="auto"></audio>
+
+    <!-- Face-api.js Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+    <script>
+        // Mock student face descriptors (for demo purposes)
+        const students = [
+            { name: "Student A", rank: 1 },
+            { name: "Student B", rank: 10 },
+            { name: "Student C", rank: 25 }
+        ];
+
+        let labeledDescriptors = [];
+        let detectionInterval = null;
+        let videoStream = null;
+
+        // Capture image from video feed
+        function captureImage() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const capturedImage = document.getElementById('captured-image');
+            const context = canvas.getContext('2d');
+
+            if (!video.videoWidth || !video.videoHeight) {
+                console.error("Video dimensions not ready");
+                appendMessage("ai", "Error: Video feed not ready for capture.");
+                return;
+            }
+
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageDataUrl = canvas.toDataURL('image/png');
+            capturedImage.src = imageDataUrl;
+            capturedImage.style.display = 'block'; // Show the captured image
+            appendMessage("ai", "Image captured.");
+
+            // Hide after 5 seconds
+            setTimeout(() => {
+                capturedImage.style.display = 'none';
+            }, 5000);
+
+            return imageDataUrl; // Return for potential further use
+        }
+
+        // Request notification permission
+        async function requestNotificationPermission() {
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === "granted") {
+                    appendMessage("ai", "Notification permission granted.");
+                } else {
+                    appendMessage("ai", "Notification permission denied. Some features may not work.");
+                }
+            } catch (error) {
+                console.error("Error requesting notification permission:", error);
+                appendMessage("ai", "Error requesting notification permission.");
+            }
+        }
+
+        // Start face recognition and camera
+        async function startFaceRecognition() {
+            const faceCamContainer = document.getElementById('face-cam-container');
+            const video = document.getElementById('video');
+            const feedback = document.getElementById('permission-feedback');
+
+            appendMessage("ai", "Initializing face recognition...");
+            faceCamContainer.style.display = "block"; // Show mini face cam
+            feedback.style.display = "none"; // Hide feedback initially
+
+            // Request notification permission if not already granted
+            if (Notification.permission === "default" || Notification.permission === "denied") {
+                await requestNotificationPermission();
+            }
+
+            try {
+                // Load face-api.js models
+                appendMessage("ai", "Loading face recognition models...");
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/models'),
+                    faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/models'),
+                    faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/models')
+                ]);
+                console.log("Models loaded successfully");
+                appendMessage("ai", "Face recognition models loaded.");
+
+                // Request camera access
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(stream => {
+                        videoStream = stream;
+                        video.srcObject = stream;
+                        video.onloadedmetadata = () => {
+                            video.play().then(() => {
+                                console.log("Video stream started");
+                                appendMessage("ai", "Camera initialized.");
+                                // Mock descriptors for demo (replace with real data for actual recognition)
+                                labeledDescriptors = students.map(student => 
+                                    new faceapi.LabeledFaceDescriptors(student.name, [new Float32Array(128).fill(Math.random())])
+                                );
+                                detectFaces();
+                            }).catch(err => {
+                                console.error("Error playing video:", err);
+                                appendMessage("ai", "Error: Could not play video.");
+                                feedback.textContent = "Video playback failed. Please refresh the page.";
+                                feedback.style.display = "block";
+                            });
+                        };
+                    })
+                    .catch(err => {
+                        console.error("Error accessing camera:", err);
+                        appendMessage("ai", "Error: Camera access denied. Please allow camera permission and refresh the page.");
+                        feedback.textContent = "Camera access denied. Refresh the page to retry.";
+                        feedback.style.display = "block";
+                    });
+            } catch (error) {
+                console.error("Error loading models:", error);
+                appendMessage("ai", "Error loading face recognition models.");
+                feedback.textContent = "Failed to load models. Check your internet and refresh the page.";
+                feedback.style.display = "block";
+            }
+        }
+
+        // Face detection and recognition with image capture
+        function detectFaces() {
+            const video = document.getElementById('video');
+            const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.6); // Matching threshold
+
+            detectionInterval = setInterval(async () => {
+                try {
+                    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+                        .withFaceLandmarks()
+                        .withFaceDescriptors();
+
+                    if (detections.length > 0) {
+                        // Capture image when a face is detected
+                        captureImage();
+
+                        const results = detections.map(d => faceMatcher.findBestMatch(d.descriptor));
+                        results.forEach((result, i) => {
+                            const student = students.find(s => s.name === result.label);
+                            if (student && result.label !== "unknown" && result.distance < 0.6) {
+                                updateRankBadge(student.rank, student.name);
+                                showNotification(`Welcome back, ${student.name}! Rank: ${student.rank}`);
+                                appendMessage("ai", `Recognized: ${student.name} (Rank: ${student.rank})`);
+                            } else {
+                                updateRankBadgeToDefault();
+                                showNotification("Face not recognized!");
+                                appendMessage("ai", "Face not recognized.");
+                                document.getElementById("alertSound").play();
+                            }
+                        });
+                    } else {
+                        updateRankBadgeToDefault();
+                        appendMessage("ai", "No face detected.");
+                    }
+                } catch (error) {
+                    console.error("Error during face detection:", error);
+                    appendMessage("ai", "Error during face detection.");
+                }
+            }, 2000); // Check every 2 seconds
+        }
+
+        // Stop face recognition and clean up
+        function stopFaceRecognition() {
+            if (detectionInterval) {
+                clearInterval(detectionInterval);
+                detectionInterval = null;
+            }
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+            document.getElementById("face-cam-container").style.display = "none";
+            document.getElementById("captured-image").style.display = "none";
+            updateRankBadgeToDefault();
+        }
+
+        // Update rank badge with recognized student data
+        function updateRankBadge(rank, name) {
+            const starElement = document.getElementById("star");
+            const rankElement = document.getElementById("rank");
+            const positionElement = document.getElementById("position");
+            let starColor = "";
+            let position = "";
+
+            if (rank >= 1 && rank <= 5) {
+                starColor = "#ffd700"; // Gold
+                position = "Top 5%";
+            } else if (rank <= 10) {
+                starColor = "#c0c0c0"; // Silver
+                position = "Top 10%";
+            } else if (rank <= 20) {
+                starColor = "#cd7f32"; // Bronze
+                position = "Top 20%";
+            } else if (rank <= 50) {
+                starColor = "#00b894"; // Teal
+                position = "Top 50%";
+            } else {
+                starColor = "#808080"; // Gray
+                position = "Keep Learning!";
+            }
+
+            starElement.style.color = starColor;
+            rankElement.textContent = `Rank: ${rank} (${name})`;
+            positionElement.textContent = position;
+        }
+
+        // Reset rank badge to default state
+        function updateRankBadgeToDefault() {
+            const starElement = document.getElementById("star");
+            const rankElement = document.getElementById("rank");
+            const positionElement = document.getElementById("position");
+
+            starElement.style.color = "#808080"; // Gray
+            rankElement.textContent = "Rank: Unknown";
+            positionElement.textContent = "Face not detected";
+        }
+
+        // Show browser notification
+        function showNotification(message) {
+            if (Notification.permission === "granted") {
+                new Notification(message);
+            } else {
+                appendMessage("ai", "Notifications are disabled. Please enable them when prompted.");
+            }
+        }
+
+        // Doubt functionality
+        function addNote() {
+            const noteInput = document.getElementById('note-input');
+            const noteText = noteInput.value.trim();
+            if (noteText === "") return;
+
+            const notesList = document.getElementById('notes-list');
+            const noteItem = document.createElement('li');
+            noteItem.className = 'doubt-item';
+
+            const noteSpan = document.createElement('span');
+            noteSpan.textContent = noteText;
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.className = 'doubt-delete';
+            deleteButton.onclick = function() {
+                notesList.removeChild(noteItem);
+            };
+
+            noteItem.appendChild(noteSpan);
+            noteItem.appendChild(deleteButton);
+            notesList.appendChild(noteItem);
+
+            noteInput.value = ""; // Clear input
+            appendMessage("ai", "Doubt added: " + noteText);
+        }
+
+        // Hero button alert
+        document.querySelector(".hero-btn").addEventListener("click", () => {
+            alert("Welcome to SmartEdu! Let’s start learning.");
+        });
+
+        // Chat functionality
+        function toggleChat() {
+            const chatBox = document.getElementById("chat-container");
+            chatBox.style.display = chatBox.style.display === "flex" ? "none" : "flex";
+        }
+
+        function sendMessage() {
+            let inputField = document.getElementById("chat-input");
+            let message = inputField.value.trim();
+            if (!inputField || message === "") return;
+
+            try {
+                appendMessage("user", message);
+                sendToGoogleChat(message); // Optional
+                inputField.value = "";
+                appendMessage("ai", "Typing...");
+                
+                setTimeout(() => {
+                    let chatMessages = document.getElementById("chat-messages");
+                    chatMessages.lastChild.remove();
+                    getAIResponse(message);
+                }, 1000);
+            } catch (error) {
+                console.error("Error sending message:", error);
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
+
+        function appendMessage(sender, message) {
+            let chatMessages = document.getElementById("chat-messages");
+            let msgDiv = document.createElement("div");
+            msgDiv.classList.add("message", sender === "user" ? "user-message" : "ai-message");
+            
+            let timeSpan = document.createElement("span");
+            timeSpan.textContent = new Date().toLocaleTimeString();
+            
+            msgDiv.innerText = message;
+            msgDiv.appendChild(timeSpan);
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function getAIResponse(userInput) {
+            let response = `You said: "${userInput}". I'm Grok, created by xAI. How can I assist you today?`;
+            appendMessage("ai", response);
+        }
+
+        // Google Chat Integration (optional)
+        const GOOGLE_CHAT_WEBHOOK_URL = "https://chat.googleapis.com/v1/spaces/XXXXX/messages?key=YYYYY&token=ZZZZZ";
+
+        function sendToGoogleChat(message) {
+            const payload = {
+                text: `User input from SmartEdu: ${message}`
+            };
+
+            fetch(GOOGLE_CHAT_WEBHOOK_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to send message to Google Chat");
+                }
+                console.log("Message sent to Google Chat successfully");
+            })
+            .catch(error => {
+                console.error("Error sending to Google Chat:", error);
+            });
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            updateRankBadgeToDefault();
+            startFaceRecognition(); // Start camera and face recognition on load
+        };
+
+        // Clean up when user leaves the page
+        window.addEventListener('beforeunload', function() {
+            stopFaceRecognition();
+        });
+    </script>
+</body>
+</html>
