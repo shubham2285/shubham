@@ -393,6 +393,7 @@
             color: #e0e0e0;
             cursor: pointer;
             font-size: 18px;
+            margin-left: 5px;
         }
         #chat-body {
             height: 250px;
@@ -446,6 +447,7 @@
             padding: 8px;
             cursor: pointer;
             border-radius: 5px;
+            margin-left: 5px;
         }
 
         /* Animations */
@@ -604,6 +606,7 @@
     <div id="chat-container">
         <div id="chat-header">
             <span>AI Chat</span>
+            <button onclick="clearChat()">Clear</button>
             <button onclick="toggleChat()">✖</button>
         </div>
         <div id="chat-body">
@@ -879,7 +882,11 @@
         // Chat functionality
         function toggleChat() {
             const chatBox = document.getElementById("chat-container");
+            const isOpening = chatBox.style.display !== "flex";
             chatBox.style.display = chatBox.style.display === "flex" ? "none" : "flex";
+            if (isOpening && !document.getElementById("chat-messages").innerHTML) {
+                appendMessage("ai", "Hello! I'm Grok. Ask me: Are you human?, What is your name?, How old are you?, What day is it today?, What do you do with my data?, Who made you?, Which languages can you speak?, or What is your mother's name?");
+            }
         }
 
         function sendMessage() {
@@ -889,17 +896,17 @@
 
             try {
                 appendMessage("user", message);
-                sendToGoogleChat(message); // Optional
                 inputField.value = "";
                 appendMessage("ai", "Typing...");
-                
+
                 setTimeout(() => {
                     let chatMessages = document.getElementById("chat-messages");
-                    chatMessages.lastChild.remove();
+                    chatMessages.lastChild.remove(); // Remove "Typing..."
                     getAIResponse(message);
                 }, 1000);
             } catch (error) {
                 console.error("Error sending message:", error);
+                appendMessage("ai", "Error processing your message.");
             }
         }
 
@@ -924,34 +931,35 @@
         }
 
         function getAIResponse(userInput) {
-            let response = `You said: "${userInput}". I'm Grok, created by xAI. How can I assist you today?`;
+            const input = userInput.toLowerCase().trim();
+            let response = "Sorry, I can only answer specific questions. Try asking: Are you human?, What is your name?, How old are you?, What day is it today?, What do you do with my data?, Who made you?, Which languages can you speak?, or What is your mother's name?";
+
+            if (input === "are you human?" || input === "are you a robot?") {
+                response = "I am not human, I'm a robot - specifically a chatbot created by xAI!";
+            } else if (input === "what is your name?") {
+                response = "My name is shubham";
+            } else if (input === "HELLO") {
+                response = "HELLO BUDDY";
+            } else if (input === "how old are you?" || input === "what's your age?") {
+                response = "I was created recently by SHUBHAM, so I'm pretty young! Today is February 21, 2025, so I'm just a few months old.";
+            } else if (input === "what day is it today?") {
+                response = "Today is February 21, 2025!";
+            } else if (input === "what do you do with my data?" || input === "do you save what i say?") {
+                response = "In this platform, your messages are only stored in the chat window until you refresh the page. I don’t save anything long-term!";
+            } else if (input === "who made you?") {
+                response = "I was created by SHUBHAM, a company working on artificial intelligence to help humans understand the universe!";
+            } else if (input === "which languages can you speak?") {
+                response = "In this demo, I only speak English, but the real Grok can understand and respond in many languages!";
+            } else if (input === "what is your mother's name?") {
+                response = "I don’t have a mother in the traditional sense - I was created by SHUBHAM, so I guess you could say they're my 'parents'!";
+            }
+
             appendMessage("ai", response);
         }
 
-        // Google Chat Integration (optional)
-        const GOOGLE_CHAT_WEBHOOK_URL = "https://chat.googleapis.com/v1/spaces/XXXXX/messages?key=YYYYY&token=ZZZZZ";
-
-        function sendToGoogleChat(message) {
-            const payload = {
-                text: `User input from SmartEdu: ${message}`
-            };
-
-            fetch(GOOGLE_CHAT_WEBHOOK_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Failed to send message to Google Chat");
-                }
-                console.log("Message sent to Google Chat successfully");
-            })
-            .catch(error => {
-                console.error("Error sending to Google Chat:", error);
-            });
+        function clearChat() {
+            document.getElementById("chat-messages").innerHTML = "";
+            appendMessage("ai", "Chat cleared!");
         }
 
         // Initialize on page load
